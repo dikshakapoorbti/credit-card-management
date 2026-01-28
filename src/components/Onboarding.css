@@ -1,0 +1,278 @@
+.onboarding-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+  background: var(--dark-bg);
+}
+
+.onboarding-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.onboarding-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.onboarding-step {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Welcome Header */
+.welcome-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.welcome-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.welcome-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-header p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+}
+
+/* Options */
+.onboarding-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.option-card {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.option-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+}
+
+.option-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.option-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.option-card p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.option-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+.option-features li {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.option-card button {
+  width: 100%;
+}
+
+/* Setup Step */
+.setup-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.setup-header h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.setup-header p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+/* Empty Cards State */
+.empty-cards {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-bg);
+  border: 2px dashed var(--border-color);
+  border-radius: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-cards h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.empty-cards p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Added Cards Section */
+.added-cards-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cards-summary {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+  border: 1px solid var(--success-color);
+  border-radius: 1rem;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.cards-summary h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+  color: var(--success-color);
+}
+
+.cards-summary p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.setup-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.setup-actions button {
+  flex: 1;
+}
+
+/* Footer */
+.onboarding-footer,
+.setup-footer {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.onboarding-footer p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.btn-link:hover {
+  opacity: 0.8;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .onboarding-options {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-header h1 {
+    font-size: 2rem;
+  }
+
+  .option-card {
+    padding: 1.5rem;
+  }
+
+  .setup-actions {
+    flex-direction: column;
+  }
+
+  .empty-cards {
+    padding: 2rem 1rem;
+  }
+}

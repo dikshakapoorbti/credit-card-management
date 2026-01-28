@@ -1,0 +1,42 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validate image files
+    function isValidImage() {
+      return request.resource.size < 5 * 1024 * 1024 // 5MB max
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // User profile photos
+    match /users/{userId}/profile/{fileName} {
+      // Users can only read and write their own photos
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && isValidImage();
+      allow delete: if isOwner(userId);
+    }
+
+    // Card images (if needed in future)
+    match /users/{userId}/cards/{cardId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && isValidImage();
+      allow delete: if isOwner(userId);
+    }
+
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

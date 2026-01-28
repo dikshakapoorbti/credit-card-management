@@ -1,0 +1,132 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for security
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail(email) {
+      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+
+    // Prevent data injection and XSS
+    function isValidString(str) {
+      return str is string && str.size() > 0 && str.size() < 1000;
+    }
+
+    function isValidNumber(num) {
+      return num is number && num >= 0;
+    }
+
+    // User profile rules
+    match /users/{userId} {
+      // Users can only read and write their own profile
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && isValidString(request.resource.data.name)
+        && isValidEmail(request.resource.data.email);
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId;
+      allow delete: if false; // Prevent profile deletion
+
+      // User's cards subcollection
+      match /cards/{cardId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && isValidString(request.resource.data.cardName)
+          && isValidString(request.resource.data.bankName)
+          && isValidNumber(request.resource.data.creditLimit)
+          && isValidNumber(request.resource.data.currentBalance)
+          && request.resource.data.creditLimit >= request.resource.data.currentBalance;
+        allow update: if isOwner(userId)
+          && isValidNumber(request.resource.data.creditLimit)
+          && isValidNumber(request.resource.data.currentBalance)
+          && request.resource.data.creditLimit >= request.resource.data.currentBalance;
+        allow delete: if isOwner(userId);
+      }
+
+      // User's expenses subcollection
+      match /expenses/{expenseId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && isValidString(request.resource.data.category)
+          && isValidString(request.resource.data.description)
+          && isValidNumber(request.resource.data.amount)
+          && request.resource.data.amount > 0
+          && request.resource.data.amount < 10000000; // Max 1 crore
+        allow update: if isOwner(userId)
+          && isValidNumber(request.resource.data.amount)
+          && request.resource.data.amount > 0;
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Card Reviews - public read, authenticated write
+    match /cardReviews/{cardId}/reviews/{reviewId} {
+      // Anyone can read reviews
+      allow read: if true;
+
+      // Only authenticated users can write reviews
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && isValidString(request.resource.data.userName)
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && isValidString(request.resource.data.reviewText)
+        && request.resource.data.reviewText.size() <= 2000;
+
+      // Users can only update their own reviews
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid;
+
+      // Users can only delete their own reviews
+      allow delete: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // Recommendation Comments - public read, authenticated write
+    match /recommendationComments/{commentId} {
+      // Anyone can read comments
+      allow read: if true;
+
+      // Only authenticated users can write comments
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && isValidString(request.resource.data.userName)
+        && isValidString(request.resource.data.category)
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && isValidString(request.resource.data.comment)
+        && request.resource.data.comment.size() <= 1000;
+
+      // Users can only update their own comments (for likes)
+      allow update: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+            || request.resource.data.keys().hasOnly(['likes', 'updatedAt']));
+
+      // Users can only delete their own comments
+      allow delete: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // Admin collection (if needed for admin dashboard)
+    match /admin/{document=**} {
+      // Only allow access if user has admin claim (set via Firebase Admin SDK)
+      allow read, write: if isAuthenticated()
+        && request.auth.token.admin == true;
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

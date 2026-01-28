@@ -1,0 +1,373 @@
+.card-recommendation {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.recommendation-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Error Dialog */
+.error-dialog {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 2px solid #ef4444;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  min-width: 300px;
+}
+
+.error-icon {
+  font-size: 1.5rem;
+}
+
+.error-content p {
+  margin: 0;
+  color: #991b1b;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.recommendation-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.recommendation-header p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.recommendation-form-container {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.recommendation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.input-wrapper input {
+  padding-left: 2.5rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--dark-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.btn-recommend {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border: none;
+  border-radius: 0.75rem;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-recommend:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+/* Results */
+.recommendations-results h2 {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.recommendations-list {
+  display: grid;
+  gap: 2rem;
+}
+
+.recommendation-card {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.recommendation-card.best-choice {
+  border-color: #10b981;
+  box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2);
+}
+
+.recommendation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.best-badge {
+  position: absolute;
+  top: -12px;
+  right: 2rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.card-header-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card-color-indicator {
+  width: 60px;
+  height: 60px;
+  border-radius: 1rem;
+  flex-shrink: 0;
+}
+
+.card-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+}
+
+.card-info p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.benefit-display {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid var(--primary-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.benefit-amount .label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.benefit-amount h2 {
+  font-size: 2.5rem;
+  margin: 0.5rem 0;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.benefit-percentage {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.offer-details {
+  margin-bottom: 1.5rem;
+}
+
+.offer-text {
+  color: var(--text-primary);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.warning-text {
+  color: #f59e0b;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--hover-bg);
+  border-radius: 0.75rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.active-offers {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.active-offers h4 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.offer-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--hover-bg);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.offer-item:last-child {
+  margin-bottom: 0;
+}
+
+.offer-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.offer-desc {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.offer-terms {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.offer-validity {
+  color: var(--primary-color);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: 1.5rem;
+}
+
+.no-results p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recommendation-header h1 {
+    font-size: 2rem;
+  }
+
+  .recommendation-form-container {
+    padding: 1.5rem;
+  }
+
+  .recommendation-card {
+    padding: 1.5rem;
+  }
+
+  .benefit-amount h2 {
+    font-size: 2rem;
+  }
+
+  .card-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .best-badge {
+    top: -10px;
+    right: 1rem;
+    font-size: 0.875rem;
+    padding: 0.4rem 1rem;
+  }
+}
