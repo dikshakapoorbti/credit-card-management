@@ -1,0 +1,166 @@
+// Prisma Schema for Credit Card Recommendation System
+// Based on database.md documentation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ADMIN-CONTROLLED MASTER DATA ====================
+
+// 6.1 Banks - Stores issuing bank information
+model Bank {
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  logoUrl       String?      @map("logo_url")
+  apiIdentifier String?      @map("api_identifier")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  creditCards   CreditCard[]
+
+  @@map("banks")
+}
+
+// 6.2 Credit Cards (Master Table) - Defines each credit card product
+model CreditCard {
+  id             Int       @id @default(autoincrement())
+  bankId         Int       @map("bank_id")
+  cardName       String    @map("card_name")
+  cardNetwork    String?   @map("card_network") // VISA, Mastercard, RuPay, etc.
+  annualFee      Decimal   @default(0) @map("annual_fee") @db.Decimal(10, 2)
+  feeWaiverSpend Decimal?  @map("fee_waiver_spend") @db.Decimal(12, 2)
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  bank           Bank      @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  cashbackRules  CardCashbackRule[]
+  feeRules       CardFeeRule[]
+  userCards      UserCard[]
+
+  @@unique([bankId, cardName])
+  @@map("credit_cards")
+}
+
+// 6.3 Spend Categories - Used for mapping expenses and cashback rules
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  icon      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  cashbackRules CardCashbackRule[]
+  userExpenses  UserExpense[]
+
+  @@map("categories")
+}
+
+// 6.4 Card Cashback Rules (Recommendation Engine Core)
+model CardCashbackRule {
+  id              Int       @id @default(autoincrement())
+  cardId          Int       @map("card_id")
+  categoryId      Int       @map("category_id")
+  rewardType      String    @default("cashback") @map("reward_type") // cashback, waiver, points
+  cashbackPercent Decimal   @map("cashback_percent") @db.Decimal(5, 2)
+  maxCashback     Decimal?  @map("max_cashback") @db.Decimal(10, 2)
+  minSpend        Decimal?  @map("min_spend") @db.Decimal(10, 2)
+  minTxnAmount    Decimal?  @map("min_txn_amount") @db.Decimal(10, 2)
+  maxTxnAmount    Decimal?  @map("max_txn_amount") @db.Decimal(10, 2)
+  monthlyCap      Decimal?  @map("monthly_cap") @db.Decimal(10, 2)
+  rewardCycle     String?   @map("reward_cycle") // statement, monthly, quarterly
+  startDate       DateTime? @map("start_date")
+  endDate         DateTime? @map("end_date")
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  card            CreditCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  category        Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  exclusions      CashbackExclusion[]
+
+  @@map("card_cashback_rules")
+}
+
+// 6.5 Cashback Exclusions - Used to block invalid cashback scenarios
+model CashbackExclusion {
+  id               Int      @id @default(autoincrement())
+  cashbackRuleId   Int      @map("cashback_rule_id")
+  exclusionType    String   @map("exclusion_type") // Wallet Load, Cash Withdrawal, Balance Transfer
+  excludedMerchant String?  @map("excluded_merchant")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  cashbackRule     CardCashbackRule @relation(fields: [cashbackRuleId], references: [id], onDelete: Cascade)
+
+  @@map("cashback_exclusions")
+}
+
+// Card Fee Rules (From HDFC section)
+model CardFeeRule {
+  id             Int      @id @default(autoincrement())
+  cardId         Int      @map("card_id")
+  annualFee      Decimal  @map("annual_fee") @db.Decimal(10, 2)
+  joiningFee     Decimal? @map("joining_fee") @db.Decimal(10, 2)
+  feeWaiverSpend Decimal? @map("fee_waiver_spend") @db.Decimal(12, 2)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  card           CreditCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@map("card_fee_rules")
+}
+
+// ==================== USER-OWNED DATA ====================
+
+// 6.6 Users
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  firebaseUid String? @unique @map("firebase_uid")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userCards  UserCard[]
+  expenses   UserExpense[]
+
+  @@map("users")
+}
+
+// 6.7 User Cards (Bridge Table) - Connects users and cards (many-to-many)
+model UserCard {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  cardId      Int       @map("card_id")
+  last4Digits String?   @map("last_4_digits")
+  linkedPhone String?   @map("linked_phone")
+  verified    Boolean   @default(false)
+  addedAt     DateTime  @default(now()) @map("added_at")
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card        CreditCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+  @@map("user_cards")
+}
+
+// 6.8 User Expenses
+model UserExpense {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  categoryId  Int      @map("category_id")
+  amount      Decimal  @db.Decimal(12, 2)
+  merchant    String?
+  expenseDate DateTime @map("expense_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("user_expenses")
+}
