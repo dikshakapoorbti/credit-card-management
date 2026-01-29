@@ -1,5 +1,9 @@
 # Backend Dockerfile for Production
-FROM node:18-alpine
+# Using Debian-based image for OpenSSL compatibility with Prisma
+FROM node:18-slim
+
+# Install OpenSSL (required for Prisma)
+RUN apt-get update -y && apt-get install -y openssl libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
